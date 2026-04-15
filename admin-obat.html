@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Obat</title>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f7fb;
+padding:30px;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+}
+
+button{
+padding:10px;
+background:#1e88e5;
+color:white;
+border:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Admin Obat</h2>
+
+<input id="obat" placeholder="Nama Obat">
+<input id="dosis" placeholder="Dosis">
+<input id="rute" placeholder="Rute">
+<input id="waktu" placeholder="Waktu">
+
+<button onclick="tambahObat()">Buat QR Obat</button>
+
+<h3>QR Obat</h3>
+
+<canvas id="qr"></canvas>
+
+</div>
+
+<script>
+
+function tambahObat(){
+
+let obat = document.getElementById("obat").value;
+let dosis = document.getElementById("dosis").value;
+let rute = document.getElementById("rute").value;
+let waktu = document.getElementById("waktu").value;
+
+let dataQR = obat+"|"+dosis+"|"+rute+"|"+waktu;
+
+QRCode.toCanvas(document.getElementById("qr"), dataQR);
+
+}
+
+</script>
+
+</body>
+</html>

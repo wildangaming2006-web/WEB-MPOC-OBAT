@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Obat</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<h2>Jadwal Pemberian Obat</h2>
+
+<div id="dataPasien"></div>
+
+<div id="scanObat"></div>
+
+</div>
+</div>
+
+<script>
+
+// ambil data pasien
+let pasien = JSON.parse(localStorage.getItem("pasienAktif"));
+
+let dataPasien = document.getElementById("dataPasien");
+let scanObat = document.getElementById("scanObat");
+
+if(pasien){
+
+dataPasien.innerHTML = `
+<div class="info-box">
+<b>Nama :</b> ${pasien.nama}<br>
+<b>ID :</b> ${pasien.id}<br>
+<b>Obat :</b> ${pasien.obat}<br>
+<b>Dosis :</b> ${pasien.dosis}<br>
+<b>Rute :</b> ${pasien.rute}<br>
+<b>Waktu :</b> ${pasien.waktu}
+</div>
+`;
+
+scanObat.innerHTML = `
+<br>
+<button onclick="scanObatLanjut()">
+Scan Obat
+</button>
+`;
+
+}else{
+
+dataPasien.innerHTML = `
+<div class="error">
+Data pasien tidak ditemukan
+</div>
+`;
+
+}
+
+function scanObatLanjut(){
+window.location.href="scan-obat.html";
+}
+
+</script>
+
+</body>
+</html>

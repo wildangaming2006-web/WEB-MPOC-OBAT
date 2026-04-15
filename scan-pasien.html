@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan Gelang Pasien</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+<style>
+
+.center-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
+
+.container{
+width:100%;
+max-width:600px;
+}
+
+.card{
+background:rgba(255,255,255,0.9);
+padding:30px;
+border-radius:12px;
+box-shadow:0 0 15px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+video{
+width:100%;
+border-radius:10px;
+margin-top:20px;
+}
+
+canvas{
+display:none;
+}
+
+button{
+padding:10px 20px;
+background:#1e88e5;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.success{
+color:green;
+font-weight:bold;
+margin-top:20px;
+}
+
+.error{
+color:red;
+font-weight:bold;
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="center-wrapper">
+<div class="container">
+<div class="card">
+
+<h2>Scan Gelang Pasien</h2>
+
+<video id="video" autoplay></video>
+<canvas id="canvas"></canvas>
+
+<div id="hasil"></div>
+
+</div>
+</div>
+</div>
+
+<script>
+
+// ===============================
+// SUARA
+// ===============================
+let suaraBerhasil = new Audio("sound/berhasil.mp3");
+let suaraGagal = new Audio("sound/gagal.mp3");
+
+// ===============================
+// DATA PASIEN
+// ===============================
+let data = [
+{
+id:"PS001",
+nama:"Raffelinda",
+obat:"Paracetamol",
+dosis:"500mg",
+rute:"Oral",
+waktu:"08:00" ,
+resep:"resep/resep-PS001.jpg"
+},
+{
+id:"PS002",
+nama:"Felina",
+obat:"Amoxicillin",
+dosis:"500mg",
+rute:"Oral",
+waktu:"12:00" ,
+resep:"resep/resep-PS002.jpg"
+},
+{
+id:"PS003",
+nama:"Hafiyyana",
+obat:"Vitamin C",
+dosis:"1000mg",
+rute:"Oral",
+waktu:"18:00" , 
+resep:"resep/resep-PS003.jpg"
+},
+{
+id:"PS004",
+nama:"Iftitah",
+obat:"Bisacodyl",
+dosis:"500mg",
+rute:"Rektal",
+waktu:"09:00" ,
+resep:"resep/resep-PS004.jpg"
+},
+{
+id:"PS005",
+nama:"Gabriella",
+obat:"Morfin",
+dosis:"250mg",
+rute:"Intravena",
+waktu:"13:00" ,
+resep:"resep/resep-PS005.jpg"
+}
+];
+
+let pasien = data;
+
+let sudahScan = false;
+let hasilDiv = document.getElementById("hasil");
+
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+// ===============================
+// START CAMERA
+// ===============================
+async function startCamera(){
+
+try{
+
+const stream = await navigator.mediaDevices.getUserMedia({
+video:{ facingMode:"environment" }
+});
+
+video.srcObject = stream;
+
+requestAnimationFrame(scanQR);
+
+}catch(err){
+
+hasilDiv.innerHTML = `
+<div class="error">
+❌ Gagal membuka kamera
+</div>
+`;
+
+}
+
+}
+
+// ===============================
+// SCAN QR
+// ===============================
+function scanQR(){
+
+if(video.readyState !== video.HAVE_ENOUGH_DATA){
+requestAnimationFrame(scanQR);
+return;
+}
+
+canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
+
+ctx.drawImage(video,0,0);
+
+const imageData = ctx.getImageData(
+0,0,canvas.width,canvas.height
+);
+
+const code = jsQR(
+imageData.data,
+canvas.width,
+canvas.height
+);
+
+if(code && !sudahScan){
+
+let hasilQR = code.data
+.replace(/\s/g,'')
+.trim()
+.toUpperCase();
+
+let pasienData = pasien.find(
+p => p.id.replace(/\s/g,'').toUpperCase() === hasilQR
+);
+
+if(pasienData){
+
+suaraBerhasil.play();
+
+hasilDiv.innerHTML = `
+<div class="success">
+✅ Pasien ditemukan<br>
+Nama: ${pasienData.nama}<br>
+ID: ${pasienData.id}
+</div>
+`;
+
+localStorage.setItem(
+"pasienAktif",
+JSON.stringify(pasienData)
+);
+
+sudahScan = true;
+
+setTimeout(()=>{
+window.location.href="jadwal-obat.html";
+},1500);
+
+}else{
+
+suaraGagal.play();
+
+hasilDiv.innerHTML = `
+<div class="error">
+❌ Pasien tidak ditemukan
+</div>
+`;
+
+}
+
+}
+
+requestAnimationFrame(scanQR);
+
+}
+
+// ===============================
+// START
+// ===============================
+startCamera();
+
+</script>
+
+</body>
+</html>

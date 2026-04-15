@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan Obat</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+<style>
+
+.center{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container{
+width:100%;
+max-width:600px;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:12px;
+text-align:center;
+}
+
+video{
+width:100%;
+border-radius:10px;
+}
+
+canvas{
+display:none;
+}
+
+.valid{
+background:#e8f5e9;
+color:green;
+padding:15px;
+border-radius:10px;
+margin-top:20px;
+text-align:left;
+}
+
+.invalid{
+background:#ffebee;
+color:red;
+padding:15px;
+border-radius:10px;
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="center">
+<div class="container">
+<div class="card">
+
+<h2>Scan Obat</h2>
+
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas"></canvas>
+
+<div id="hasil"></div>
+
+</div>
+</div>
+</div>
+
+<script>
+
+// ==========================
+// SUARA
+// ==========================
+let suaraBerhasil = new Audio("sound/berhasil.mp3");
+let suaraGagal = new Audio("sound/gagal.mp3");
+
+// ==========================
+// DATA PASIEN
+// ==========================
+let pasien = JSON.parse(localStorage.getItem("pasienAktif"));
+
+// ==========================
+// ELEMENT
+// ==========================
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let sudahScan = false;
+
+
+// ==========================
+// START CAMERA
+// ==========================
+async function startCamera(){
+
+try{
+
+const stream = await navigator.mediaDevices.getUserMedia({
+video:{ facingMode:"environment" }
+});
+
+video.srcObject = stream;
+
+requestAnimationFrame(scanQR);
+
+}catch(err){
+
+document.getElementById("hasil").innerHTML=
+"❌ Kamera gagal dibuka";
+
+}
+
+}
+
+
+// ==========================
+// SCAN QR
+// ==========================
+function scanQR(){
+
+if(video.readyState !== video.HAVE_ENOUGH_DATA){
+requestAnimationFrame(scanQR);
+return;
+}
+
+canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
+
+ctx.drawImage(video,0,0);
+
+const imageData = ctx.getImageData(
+0,0,canvas.width,canvas.height
+);
+
+const code = jsQR(
+imageData.data,
+canvas.width,
+canvas.height
+);
+
+if(code && !sudahScan){
+
+let hasilQR = code.data
+.toLowerCase()
+.replace(/\s/g,'')
+.trim();
+
+let obatPasien = pasien.obat
+.toLowerCase()
+.replace(/\s/g,'')
+.trim();
+
+if(hasilQR.includes(obatPasien) || obatPasien.includes(hasilQR)){
+
+suaraBerhasil.play();
+
+document.getElementById("hasil").innerHTML=
+`
+<div class="valid">
+<b>✅ Validasi Berhasil</b><br><br>
+
+✅ Obat ✔ (${pasien.obat})<br>
+✅ Dosis ✔ (${pasien.dosis})<br>
+✅ Rute ✔ (${pasien.rute})<br>
+✅ Waktu ✔ (${pasien.waktu})
+
+<br><br>
+
+</div>
+`;
+
+
+// ==========================
+// SIMPAN KE KONFIRMASI
+// ==========================
+localStorage.setItem("hasilScanObat", JSON.stringify({
+nama: pasien.nama,
+obat: pasien.obat,
+dosis: pasien.dosis,
+rute: pasien.rute,
+waktu: pasien.waktu,
+resep: pasien.resep,
+status: "Validasi Berhasil",
+tanggal: new Date().toLocaleString()
+}));
+
+setTimeout(()=>{
+window.location.href="konfirmasi.html";
+},1500);
+
+}else{
+
+suaraGagal.play();
+
+document.getElementById("hasil").innerHTML=
+`
+<div class="invalid">
+❌ ALERT! Validasi Gagal<br>
+Obat tidak cocok
+</div>
+`;
+
+}
+
+}
+
+requestAnimationFrame(scanQR);
+
+}
+
+
+// ==========================
+// START
+// ==========================
+startCamera();
+
+</script>
+
+</body>
+</html>

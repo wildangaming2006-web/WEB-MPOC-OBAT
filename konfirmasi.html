@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konfirmasi Obat</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.center{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:12px;
+text-align:center;
+max-width:600px;
+margin:auto;
+}
+
+.data{
+text-align:left;
+margin-top:20px;
+}
+
+button{
+background:#1e88e5;
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:8px;
+cursor:pointer;
+margin-top:20px;
+}
+
+img{
+max-width:100%;
+height:auto;
+}
+
+.gambar-resep{
+width:100%;
+max-width:300px;
+display:block;
+margin:20px auto;
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="center">
+<div class="card">
+
+<h2>Konfirmasi Pemberian Obat</h2>
+
+<div id="data" class="data"></div>
+
+<button onclick="konfirmasi()">Konfirmasi</button>
+
+</div>
+</div>
+
+<script>
+
+// ambil hasil scan
+let dataKonfirmasi = JSON.parse(localStorage.getItem("hasilScanObat"));
+
+console.log(dataKonfirmasi);
+console.log(dataKonfirmasi.resep);
+
+// tampilkan data
+document.getElementById("data").innerHTML = `
+Nama : ${dataKonfirmasi.nama || "-"}<br>
+Obat : ${dataKonfirmasi.obat || "-"}<br>
+Dosis : ${dataKonfirmasi.dosis || "-"}<br>
+Rute : ${dataKonfirmasi.rute || "-"}<br>
+Waktu : ${dataKonfirmasi.waktu || "-"}<br>
+
+<br><br>
+<b>Resep Obat :</b><br>
+<img src="${dataKonfirmasi.resep || ''}" class="gambar-resep">
+
+`;
+
+function konfirmasi(){
+
+// ambil data RME lama
+let dataRME = JSON.parse(localStorage.getItem("dataRME")) || [];
+
+// tambah data baru
+dataRME.push(dataKonfirmasi);
+
+// simpan kembali
+localStorage.setItem("dataRME", JSON.stringify(dataRME));
+
+// pindah ke RME
+window.location.href = "rme.html";
+
+
+}
+
+</script>
+
+</script>
+
+</body>
+</html>

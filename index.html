@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login MPOC</title>
+
+
+<style>
+
+body{
+margin:0;
+padding:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#1e88e5,#42a5f5);
+font-family:Arial, sans-serif;
+}
+
+.login-box{
+background:white;
+padding:40px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+text-align:center;
+width:320px;
+}
+
+h2{
+color:#1e88e5;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+button{
+margin-top:20px;
+width:100%;
+padding:12px;
+border:none;
+background:#1e88e5;
+color:white;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#1565c0;
+}
+
+.footer{
+margin-top:15px;
+font-size:13px;
+color:#333;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-box">
+
+<img src="logo.jpg" class="logo">
+
+<h2>SISTEM DISTRIBUSI OBAT STIFERA</h2>
+<h2 class="login-title">HALAMAN LOGIN</h2>
+
+<input type="text" id="idPerawat" placeholder="ID Perawat">
+
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<div class="footer">
+</div>
+
+</div>
+
+<script>
+
+function login(){
+
+let id = document.getElementById("idPerawat").value;
+let password = document.getElementById("password").value;
+
+if(id === "perawat" && password === "123"){
+window.location.href = "pasien.html";
+}else{
+alert("ID atau Password salah");
+}
+
+}
+
+</script>
+
+</body>
+</html>

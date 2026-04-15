@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Pasien</title>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f7fb;
+padding:30px;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+}
+
+button{
+padding:10px;
+background:#1e88e5;
+color:white;
+border:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Admin Pasien</h2>
+
+<input id="id" placeholder="ID Pasien">
+<input id="nama" placeholder="Nama Pasien">
+
+<button onclick="tambahPasien()">Tambah Pasien</button>
+
+<h3>QR Pasien</h3>
+
+<canvas id="qr"></canvas>
+
+</div>
+
+<script>
+
+function tambahPasien(){
+
+let id = document.getElementById("id").value;
+let nama = document.getElementById("nama").value;
+
+let data = JSON.parse(localStorage.getItem("pasienData")) || [];
+
+data.push({
+id:id,
+nama:nama
+});
+
+localStorage.setItem("pasienData", JSON.stringify(data));
+
+QRCode.toCanvas(document.getElementById("qr"), id);
+
+alert("Pasien ditambahkan");
+
+}
+
+</script>
+
+</body>
+</html>
